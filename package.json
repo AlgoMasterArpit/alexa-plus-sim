@@ -1,0 +1,56 @@
+{
+  "name": "alexa-plus-sim",
+  "version": "0.1.0",
+  "description": "A voice and smart-display simulator for testing Alexa+ style MCP servers: talk to any Streamable HTTP MCP server, see its MCP Apps cards and answer its confirmation prompts.",
+  "license": "MIT",
+  "author": "Arpit Tyagi",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlgoMasterArpit/alexa-plus-sim.git"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "alexa",
+    "voice",
+    "mcp-apps",
+    "simulator"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npm run build:web && tsc -p tsconfig.build.json",
+    "build:web": "node scripts/build-web.ts",
+    "dev": "npm run build:web && node --watch --env-file-if-exists=.env src/index.ts",
+    "start": "node --env-file-if-exists=.env dist/index.js",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p web/tsconfig.json",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --test --test-reporter=spec \"test/**/*.test.ts\"",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test"
+  },
+  "dependencies": {
+    "@anthropic-ai/bedrock-sdk": "^1.0.0",
+    "@anthropic-ai/sdk": "^1.1.0",
+    "@modelcontextprotocol/client": "^2.3.1",
+    "@modelcontextprotocol/ext-apps": "^2.0.3",
+    "pino": "^10.4.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@modelcontextprotocol/node": "^2.1.1",
+    "@modelcontextprotocol/server": "^2.3.1",
+    "@types/node": "^24.19.2",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.13.0",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.0"
+  }
+}
