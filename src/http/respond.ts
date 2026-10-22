@@ -22,6 +22,25 @@ export function sendJson(response: ServerResponse, status: number, body: unknown
   response.end(JSON.stringify(body));
 }
 
+const APP_VIEW_CSP = [
+  "default-src 'none'",
+  "script-src 'unsafe-inline'",
+  "style-src 'unsafe-inline'",
+  'img-src data: blob:',
+  'font-src data:',
+  "frame-ancestors 'self'",
+].join('; ');
+
+export function sendAppView(response: ServerResponse, html: string): void {
+  response.writeHead(200, {
+    'Content-Type': 'text/html; charset=utf-8',
+    'Cache-Control': 'no-store',
+    'Content-Security-Policy': APP_VIEW_CSP,
+    'X-Content-Type-Options': 'nosniff',
+  });
+  response.end(html);
+}
+
 export function sendError(response: ServerResponse, status: number, message: string): void {
   sendJson(response, status, { error: message });
 }
