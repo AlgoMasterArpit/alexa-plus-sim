@@ -123,7 +123,9 @@ export class VoiceAgent {
       const result = await this.#connection.callTool(toolUse.name, args);
       const isError = result.isError === true;
       emit({ type: 'tool_result', name: toolUse.name, isError });
-      await this.#emitCard(toolUse.name, args, result, emit);
+      if (!isError && this.#connection.hasUi(toolUse.name)) {
+        emit({ type: 'card', toolName: toolUse.name, toolInput: args, toolResult: result });
+      }
       return {
         type: 'tool_result',
         tool_use_id: toolUse.id,
@@ -139,22 +141,6 @@ export class VoiceAgent {
         content: `The tool failed: ${error instanceof Error ? error.message : String(error)}`,
         is_error: true,
       };
-    }
-  }
-
-  async #emitCard(
-    toolName: string,
-    toolInput: Record<string, unknown>,
-    toolResult: CallToolResult,
-    emit: EmitTurnEvent,
-  ): Promise<void> {
-    const tool = this.#connection.findTool(toolName);
-    if (!tool || toolResult.isError) return;
-    try {
-      const html = await this.#connection.uiHtmlFor(tool);
-      if (html) emit({ type: 'card', toolName, html, toolInput, toolResult });
-    } catch (error) {
-      this.#logger.warn({ err: error, tool: toolName }, 'could not load the tool UI');
     }
   }
 }

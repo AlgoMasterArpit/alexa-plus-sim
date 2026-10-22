@@ -6,7 +6,7 @@ import { pino } from 'pino';
 import type { TurnEvent } from '../src/events.ts';
 import type { ProtocolMode } from '../src/mcp-connection.ts';
 import { SessionStore } from '../src/sessions.ts';
-import { CARD_HTML, startTestMcpServer } from './support/mcp-server.ts';
+import { startTestMcpServer } from './support/mcp-server.ts';
 import { ScriptedLlm, text, toolUse, type ScriptedReply } from './support/scripted-llm.ts';
 
 const logger = pino({ level: 'silent' });
@@ -104,7 +104,7 @@ describe('voice sessions against a live MCP server', () => {
     await session.runTurn('show me', (event) => events.push(event));
 
     const card = events.find((event) => event.type === 'card');
-    assert.equal(card?.html, CARD_HTML);
+    assert.equal(card?.toolName, 'show_card');
     assert.deepEqual(card.toolResult.structuredContent, { ok: true });
     await store.closeAll();
   });

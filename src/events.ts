@@ -40,7 +40,6 @@ export type TurnEvent =
   | {
       readonly type: 'card';
       readonly toolName: string;
-      readonly html: string;
       readonly toolInput: Record<string, unknown>;
       readonly toolResult: ToolResultPayload;
     }
