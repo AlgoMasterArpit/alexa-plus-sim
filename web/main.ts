@@ -120,10 +120,10 @@ async function handleEvent(event: TurnEvent): Promise<void> {
   if (!session) return;
   switch (event.type) {
     case 'tool_call':
-      logActivity(`â†’ ${event.name} ${JSON.stringify(event.arguments)}`);
+      logActivity(`→ ${event.name} ${JSON.stringify(event.arguments)}`);
       return;
     case 'tool_result':
-      logActivity(`â† ${event.name}${event.isError ? ' failed' : ''}`, event.isError);
+      logActivity(`← ${event.name}${event.isError ? ' failed' : ''}`, event.isError);
       return;
     case 'card': {
       const { sessionId } = session;
@@ -173,7 +173,7 @@ async function sendTurn(text: string): Promise<void> {
 }
 
 function renderSession(info: SessionInfo, model: string): void {
-  ui.status.textContent = `Connected to ${info.serverName} Â· MCP ${info.protocolVersion}`;
+  ui.status.textContent = `Connected to ${info.serverName} · MCP ${info.protocolVersion}`;
   ui.serverName.textContent = `${info.serverName} ${info.serverVersion}`;
   ui.serverProtocolVersion.textContent = info.protocolVersion;
   ui.serverModel.textContent = model;
