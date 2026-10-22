@@ -1,4 +1,4 @@
-import { copyFile, mkdir } from 'node:fs/promises';
+﻿import { copyFile, mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 import { build } from 'esbuild';
@@ -21,7 +21,7 @@ await build({
 });
 
 await Promise.all(
-  ['index.html', 'styles.css'].map((file) =>
+  ['index.html', 'styles.css', 'favicon.svg'].map((file) =>
     copyFile(new URL(file, source), new URL(file, output)),
   ),
 );
