@@ -1,0 +1,113 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Alexa+ Simulator</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Alexa+ Simulator</span>
+      </div>
+      <div id="status" class="status" aria-live="polite">Not connected</div>
+    </header>
+
+    <main class="layout">
+      <section id="connect-panel" class="panel connect" aria-labelledby="connect-title">
+        <h1 id="connect-title">Connect an MCP server</h1>
+        <p class="hint">
+          Point the simulator at any Streamable HTTP MCP server, then talk to it like a smart
+          display.
+        </p>
+        <form id="connect-form">
+          <label>
+            Server URL
+            <input
+              id="server-url"
+              name="serverUrl"
+              type="url"
+              required
+              placeholder="http://127.0.0.1:8787/mcp"
+            />
+          </label>
+          <label>
+            Bearer token <span class="optional">(optional)</span>
+            <input id="server-token" name="token" type="password" autocomplete="off" />
+          </label>
+          <label>
+            Protocol
+            <select id="server-protocol" name="protocol">
+              <option value="auto">Auto (newest the server supports)</option>
+              <option value="legacy">2025-11-25</option>
+            </select>
+          </label>
+          <button id="connect-button" type="submit" class="primary">Connect</button>
+          <p id="connect-error" class="error" role="alert" hidden></p>
+        </form>
+      </section>
+
+      <section id="device" class="device" hidden aria-label="Simulated smart display">
+        <div class="screen">
+          <div class="conversation" id="conversation" aria-live="polite"></div>
+          <div class="stage" id="stage">
+            <p class="stage-hint" id="stage-hint">Cards from the server appear here.</p>
+          </div>
+          <div class="ring" id="ring" aria-hidden="true"></div>
+        </div>
+        <form class="controls" id="turn-form">
+          <button
+            id="mic-button"
+            type="button"
+            class="mic"
+            aria-label="Talk"
+            title="Click to talk, or press Space"
+          >
+            <span aria-hidden="true"></span>
+          </button>
+          <input
+            id="turn-text"
+            type="text"
+            autocomplete="off"
+            placeholder="Say something, or type here"
+            aria-label="Message"
+          />
+          <button type="submit" class="primary">Send</button>
+          <button id="disconnect-button" type="button" class="ghost">Disconnect</button>
+        </form>
+      </section>
+
+      <aside id="server-panel" class="panel tools" hidden aria-labelledby="tools-title">
+        <h2 id="tools-title">Server</h2>
+        <dl class="facts">
+          <dt>Name</dt>
+          <dd id="server-name"></dd>
+          <dt>Protocol</dt>
+          <dd id="server-protocol-version"></dd>
+          <dt>Model</dt>
+          <dd id="server-model"></dd>
+        </dl>
+        <h3>Tools</h3>
+        <ul id="tool-list" class="tool-list"></ul>
+        <h3>Activity</h3>
+        <ol id="activity" class="activity"></ol>
+      </aside>
+    </main>
+
+    <dialog id="confirm-dialog" class="confirm">
+      <form id="confirm-form" method="dialog">
+        <p id="confirm-message" class="confirm-message"></p>
+        <div id="confirm-fields" class="confirm-fields"></div>
+        <p class="hint" id="confirm-voice-hint">Say "yes" or "no", or use the buttons.</p>
+        <div class="confirm-actions">
+          <button type="button" id="confirm-decline" class="ghost">No</button>
+          <button type="submit" id="confirm-accept" class="primary">Yes</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
