@@ -1,0 +1,5 @@
+dist/
+build/
+data/
+coverage/
+package-lock.json
