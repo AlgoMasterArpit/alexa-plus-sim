@@ -1,5 +1,6 @@
 ﻿import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 
+import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 
 import type { AppConfig, ElicitationAnswer } from '../events.ts';
@@ -43,6 +44,14 @@ const toolCallBody = z.object({
 
 const SESSION_ROUTE =
   /^\/api\/sessions\/([\w-]+)(?:\/(turns|tools\/call|elicitations\/([\w-]+)|ui\/([\w.-]+)))?$/;
+
+export function describeTurnError(error: unknown): string {
+  if (error instanceof SessionBusyError) return 'Still working on the last request.';
+  if (error instanceof Anthropic.APIError) {
+    return `The model provider rejected the request (${String(error.status ?? 'network')}): ${error.message}`;
+  }
+  return 'Something went wrong while handling that request. Check the simulator logs.';
+}
 
 export interface WebServerOptions {
   readonly sessions: SessionStore;
@@ -105,13 +114,7 @@ export function createWebServer(options: WebServerOptions): Server {
         await session.runTurn(text, emit);
       } catch (error) {
         logger.error({ err: error, sessionId }, 'turn failed');
-        emit({
-          type: 'error',
-          message:
-            error instanceof SessionBusyError
-              ? 'Still working on the last request.'
-              : 'Something went wrong talking to the model. Check the server logs.',
-        });
+        emit({ type: 'error', message: describeTurnError(error) });
       }
       emit({ type: 'done' });
       response.end();
