@@ -6,7 +6,14 @@ import type { AppConfig, ElicitationAnswer } from '../events.ts';
 import type { Logger } from '../logger.ts';
 import { PROTOCOL_MODES } from '../mcp-connection.ts';
 import { SessionBusyError, type SessionStore } from '../sessions.ts';
-import { HttpError, openEventStream, readJson, sendError, sendJson } from './respond.ts';
+import {
+  HttpError,
+  openEventStream,
+  readJson,
+  sendAppView,
+  sendError,
+  sendJson,
+} from './respond.ts';
 import type { StaticAssets } from './static.ts';
 
 const connectBody = z.object({
@@ -35,7 +42,7 @@ const toolCallBody = z.object({
 });
 
 const SESSION_ROUTE =
-  /^\/api\/sessions\/([\w-]+)(?:\/(turns|tools\/call|elicitations\/([\w-]+)))?$/;
+  /^\/api\/sessions\/([\w-]+)(?:\/(turns|tools\/call|elicitations\/([\w-]+)|ui\/([\w.-]+)))?$/;
 
 export interface WebServerOptions {
   readonly sessions: SessionStore;
@@ -83,7 +90,7 @@ export function createWebServer(options: WebServerOptions): Server {
 
     const match = SESSION_ROUTE.exec(path);
     if (!match) throw new HttpError(404, 'Not found');
-    const [, sessionId = '', action, elicitationId] = match;
+    const [, sessionId = '', action, elicitationId, uiToolName] = match;
 
     if (method === 'DELETE' && !action) {
       await sessions.close(sessionId);
@@ -114,6 +121,14 @@ export function createWebServer(options: WebServerOptions): Server {
       const session = requireSession(sessionId);
       const body = await readJson(request, toolCallBody);
       sendJson(response, 200, await session.connection.callTool(body.name, body.arguments));
+      return;
+    }
+    if (method === 'GET' && uiToolName) {
+      const session = requireSession(sessionId);
+      const tool = session.connection.findTool(uiToolName);
+      const html = tool && (await session.connection.uiHtmlFor(tool));
+      if (!html) throw new HttpError(404, 'This tool has no UI.');
+      sendAppView(response, html);
       return;
     }
     if (method === 'POST' && elicitationId) {
