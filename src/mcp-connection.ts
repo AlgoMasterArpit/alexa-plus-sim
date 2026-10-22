@@ -84,6 +84,11 @@ export class McpConnection {
     return this.tools.find((tool) => tool.name === name);
   }
 
+  hasUi(toolName: string): boolean {
+    const tool = this.findTool(toolName);
+    return tool !== undefined && getToolUiResourceUri(tool) !== undefined;
+  }
+
   async callTool(name: string, args: Record<string, unknown>): Promise<CallToolResult> {
     return await this.#client.callTool({ name, arguments: args });
   }
