@@ -1,4 +1,4 @@
-import { z } from 'zod';
+﻿import { z } from 'zod';
 
 export const LLM_PROVIDERS = ['bedrock', 'anthropic'] as const;
 export type LlmProvider = (typeof LLM_PROVIDERS)[number];
@@ -39,8 +39,14 @@ export class ConfigError extends Error {
   override readonly name = 'ConfigError';
 }
 
+function withoutBlankValues(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  return Object.fromEntries(
+    Object.entries(env).filter(([, value]) => value !== undefined && value.trim() !== ''),
+  );
+}
+
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
-  const parsed = envSchema.safeParse(env);
+  const parsed = envSchema.safeParse(withoutBlankValues(env));
   if (!parsed.success) {
     throw new ConfigError(`Invalid environment configuration:\n${z.prettifyError(parsed.error)}`);
   }
