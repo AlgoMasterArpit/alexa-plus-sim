@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';
+﻿import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { ConfigError, loadConfig } from '../src/config.ts';
@@ -26,6 +26,10 @@ describe('loadConfig', () => {
       loadConfig({ SIM_MODEL: 'anthropic.claude-sonnet-5-5' }).llm.model,
       'anthropic.claude-sonnet-5-5',
     );
+  });
+
+  it('treats blank values from a copied .env.example as unset', () => {
+    assert.equal(loadConfig({ SIM_MODEL: '' }).llm.model, 'anthropic.claude-opus-5-5');
   });
 
   it('refuses to bind beyond loopback', () => {
